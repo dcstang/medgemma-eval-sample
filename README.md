@@ -17,28 +17,39 @@ graph TB
         D --> F[vLLM Endpoint]
     end
     
+    subgraph "Web Interface"
+        G[gradio-interface/app.py] --> H[Gradio Chat Interface]
+        I[gradio-interface/docs.py] --> J[Technical Documentation]
+        H --> K[User Interaction]
+        J --> L[System Documentation]
+    end
+    
     subgraph "Evaluation Pipeline"
-        G[medgemma_eval_multi_metric.py] --> H[Question Generation]
-        G --> I[Response Evaluation]
-        H --> J[Gemini 2.5 Flash]
-        I --> J
-        G --> K[Results Collection]
+        M[medgemma_eval_multi_metric.py] --> N[Question Generation]
+        M --> O[Response Evaluation]
+        N --> P[Gemini 2.5 Flash]
+        O --> P
+        M --> Q[Results Collection]
     end
     
     subgraph "Analysis & Visualization"
-        L[analyze_specialties.py] --> M[Performance Charts]
-        L --> N[Specialty Rankings]
-        L --> O[Statistical Analysis]
+        R[analyze_specialties.py] --> S[Performance Charts]
+        R --> T[Specialty Rankings]
+        R --> U[Statistical Analysis]
     end
     
     E --> G
     F --> G
-    K --> L
+    E --> M
+    F --> M
+    Q --> R
     
     style A fill:#ff9999
     style C fill:#ff9999
-    style G fill:#99ccff
-    style L fill:#99ff99
+    style G fill:#ffcc99
+    style I fill:#ffcc99
+    style M fill:#99ccff
+    style R fill:#99ff99
 ```
 
 ## Components
@@ -78,7 +89,25 @@ modal deploy batch-medgemma.py
 
 **Usage**: Provides a vLLM-compatible endpoint for batch processing of medical queries.
 
-### 2. Evaluation Framework
+### 2. Gradio Web Interface
+
+#### `gradio-interface/app.py`
+**Purpose**: Provides a user-friendly web interface for interacting with MedGemma.
+
+**Usage**:
+```bash
+cd gradio-interface
+python app.py
+# or deploy to huggingface spaces
+```
+
+**Environment Variables**:
+```bash
+export API_KEY="your-api-key"
+export MODAL_API_ENDPOINT="your-modal-endpoint-url"
+```
+
+### 3. Evaluation Framework
 
 #### `medgemma_eval_multi_metric.py`
 **Purpose**: Comprehensive evaluation script that tests MedGemma across 35 medical specialties.
@@ -106,7 +135,7 @@ export GOOGLE_API_KEY="your-google-api-key"
 python medgemma_eval_multi_metric.py
 ```
 
-### 3. Analysis & Visualization
+### 4. Analysis & Visualization
 
 #### `analyze_specialties.py`
 **Purpose**: Analyzes evaluation results and generates comprehensive visualizations.
@@ -147,6 +176,7 @@ Create a `.env` file with:
 MODAL_ENDPOINT_URL=https://your-username--example-medgemma-agent-run-medgemma.modal.run
 MODAL_API_KEY=your-modal-api-key
 GOOGLE_API_KEY=your-google-api-key
+API_KEY=your-api-key-for-gradio-interface
 ```
 
 ### Modal Secrets Setup
@@ -174,12 +204,18 @@ modal secret create MODAL_API_KEY MODAL_API_KEY=your-modal-api-key
    modal deploy batch-medgemma.py
    ```
 
-2. **Run Evaluation**:
+2. **Launch Gradio Interface** (Optional):
+   ```bash
+   cd gradio-interface
+   python app.py
+   ```
+
+3. **Run Evaluation**:
    ```bash
    python medgemma_eval_multi_metric.py
    ```
 
-3. **Analyze Results**:
+4. **Analyze Results**:
    ```bash
    python analyze_specialties.py
    ```
